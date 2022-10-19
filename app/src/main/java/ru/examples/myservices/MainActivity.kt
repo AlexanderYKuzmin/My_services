@@ -1,14 +1,17 @@
 package ru.examples.myservices
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.os.Build
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
+import android.content.ComponentName
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import androidx.core.content.ContextCompat
 import ru.examples.myservices.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private var id = 0
 
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
@@ -23,11 +26,33 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.foregroundService.setOnClickListener {
-            showNotification()
+            ContextCompat.startForegroundService(
+                this,
+                MyForegroundService.newIntent(this)
+            ) // Если не знаем какой API , то в контекст компат уже есть проверка
+        }
+
+        binding.intentService.setOnClickListener {
+            ContextCompat.startForegroundService(
+                this,
+                MyIntentService.newIntent(this)
+            )
+        }
+
+        binding.jobScheduler.setOnClickListener {
+            val componentName = ComponentName(this, MyJobService::class.java)
+            val jobInfo = JobInfo.Builder(MyJobService.JOB_ID, componentName)
+                .setRequiresCharging(true)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .build()
+
+            val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+            jobScheduler.schedule(jobInfo)
+            Log.d("Main", "scheduler pressed")
         }
     }
 
-    private fun showNotification() {
+    /*private fun showNotification() {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
@@ -51,5 +76,5 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val  CHANNEL_ID = "channel_id"
         private const val  CHANNEL_NAME = "channel_name"
-    }
+    }*/
 }

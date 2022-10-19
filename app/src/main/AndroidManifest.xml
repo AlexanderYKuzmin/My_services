@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.examples.myservices">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,6 +21,10 @@
             </intent-filter>
         </activity>
         <service android:name=".MyService"/>
+        <service android:name=".MyForegroundService"/>
+        <service android:name=".MyIntentService"/>
+        <service android:name=".MyJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
     </application>
 
 </manifest>
